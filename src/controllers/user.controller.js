@@ -75,13 +75,15 @@ const verifyCode = catchError(async(req,res) => {
 })
 
     const loginUser = catchError(async(req,res) => {
-     
+        
         const {email,password} = req.body
-
+     
         const user = await User.findOne({where:{email}})
         console.log(user)
         if(!user) return res.sendStatus(401)
-
+        
+        if(user.isVerify == false) return res.sendStatus(401)
+        console.log(user.isVerify + "ESTOY AQUI PENDEJO")
         const isPassword = await bcrypt.compare(password,user.password)
         if(!isPassword) return res.sendStatus(401)
         const token = jwt.sign({user},process.env.SECRET,{
@@ -93,8 +95,9 @@ const verifyCode = catchError(async(req,res) => {
     })
 
     const getLogin = catchError(async(req,res) => {
-        const user = req.user
-        if(user.isVerify == false) return 401
+        console.log("hola")
+        const user = req.user  
+        console.log(user)
         res.json(user)
     })
 
