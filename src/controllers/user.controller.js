@@ -63,14 +63,13 @@ const update = catchError(async(req, res) => {
 
 const verifyCode = catchError(async(req,res) => {
     const {code} = req.params
-    
     const emailcode = await EmailCode.findOne({where: {code} })
     if(!emailcode) return res.sendStatus(401)
     const body = {
         isVerify: true
     }
     const UserUpdate = await User.update(body,{where:{id:emailcode.userId}, returning:true})
-    await emailcode.destroy()
+    emailcode.destroy()
     res.json(UserUpdate[1][0])
 })
 
@@ -83,7 +82,7 @@ const verifyCode = catchError(async(req,res) => {
         if(!user) return res.sendStatus(401)
         
         if(user.isVerify == false) return res.sendStatus(401)
-        console.log(user.isVerify + "ESTOY AQUI PENDEJO")
+        
         const isPassword = await bcrypt.compare(password,user.password)
         if(!isPassword) return res.sendStatus(401)
         const token = jwt.sign({user},process.env.SECRET,{
@@ -95,9 +94,9 @@ const verifyCode = catchError(async(req,res) => {
     })
 
     const getLogin = catchError(async(req,res) => {
-        console.log("hola")
+       
         const user = req.user  
-        console.log(user)
+       
         res.json(user)
     })
 
